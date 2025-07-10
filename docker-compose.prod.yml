@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
       args:
         - PORT=${PORT:-8000}
-    container_name: nodejs-crash-app-prod
+    container_name: backend-node-prod
     ports:
       - "${PORT:-8000}:${PORT:-8000}"
     environment:

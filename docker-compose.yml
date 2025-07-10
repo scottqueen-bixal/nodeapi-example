@@ -3,37 +3,19 @@ version: '3.8'
 services:
   backend-node:
     build:
-      context: .
-      dockerfile: Dockerfile
       args:
         - PORT=${PORT:-8000}
-    container_name: nodejs-crash-app
     ports:
       - "${PORT:-8000}:${PORT:-8000}"
     environment:
-      - NODE_ENV=${NODE_ENV:-production}
+      - NODE_ENV=production
       - PORT=${PORT:-8000}
-    env_file:
-      - .env
     volumes:
       - .:/app
       - /app/node_modules
-      - /app/.env
     restart: unless-stopped
     networks:
       - nodejs-network
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:${PORT:-8000}/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    depends_on: []
-    logging:
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "3"
 
 networks:
   nodejs-network:
