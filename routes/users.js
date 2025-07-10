@@ -1,22 +1,13 @@
 import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
+import { User } from '../models/User.js';
 
 const router = express.Router();
 
 // Mock database
 let users = [
-  {
-    first_name: 'John',
-    last_name: 'Doe',
-    email: 'johndoe@example.com',
-    id: uuidv4()
-  },
-  {
-    first_name: 'Alice',
-    last_name: 'Smith',
-    email: 'alicesmith@example.com',
-    id: uuidv4()
-  },
+    new User({ first_name: 'John', last_name: 'Doe', email: 'johndoe@example.com', id: uuidv4() }),
+    new User({ first_name: 'Alice', last_name: 'Smith', email: 'alicesmith@example.com', id: uuidv4() })
 ];
 
 /**
@@ -47,12 +38,21 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
     try {
         const user = req.body;
+        console.log(req.body);
 
         if (!user.first_name || !user.last_name || !user.email) {
             return res.status(400).json({ error: 'Missing required fields' });
         }
 
-        const newUser = { ...user, id: uuidv4() };
+        // Create new User instance using object destructuring
+        const newUser = new User({
+            first_name: user.first_name,
+            last_name: user.last_name,
+            email: user.email,
+            id: uuidv4()
+        });
+
+        // Add to mock database
         users.push(newUser);
 
         res.status(201).json({
@@ -60,6 +60,7 @@ router.post('/', async (req, res) => {
             user: newUser
         });
     } catch (error) {
+        console.error('Create user error:', error);
         res.status(500).json({ error: 'Failed to create user' });
     }
 });
