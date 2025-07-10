@@ -3,7 +3,7 @@ import bodyParser from 'body-parser';
 import userRoutes from './routes/users.js'
 
 const app = express();
-const port = 8000;
+const port = process.env.PORT || 8000;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
