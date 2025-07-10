@@ -9,11 +9,13 @@ let users = [
     first_name: 'John',
     last_name: 'Doe',
     email: 'johndoe@example.com',
+    id: uuidv4()
   },
   {
     first_name: 'Alice',
     last_name: 'Smith',
     email: 'alicesmith@example.com',
+    id: uuidv4()
   },
 ];
 
