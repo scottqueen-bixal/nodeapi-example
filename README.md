@@ -19,18 +19,12 @@ A RESTful API built with Express.js and ES6 modules for managing users. This pro
 
 ## 🛠️ Installation
 
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd nodejs-crash
-```
-
-2. Install dependencies:
+1. Install dependencies:
 ```bash
 npm install
 ```
 
-3. Create a `.env` file in the root directory (optional):
+2. Create a `.env` file in the root directory (optional):
 ```bash
 PORT=8000
 ```
@@ -72,7 +66,7 @@ http://localhost:8000
 
 ### Routes
 
-#### **GET /** 
+#### **GET /**
 - **Description**: Welcome message
 - **Response**: `"Hello World!"`
 
