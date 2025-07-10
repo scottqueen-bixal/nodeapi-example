@@ -17,7 +17,12 @@ let users = [
   },
 ];
 
-// Getting the list of users from the mock database
+/**
+ * Get all users from the mock database
+ * @route GET /users
+ * @returns {Object[]} Array of user objects
+ * @throws {500} Internal server error if fetching users fails
+ */
 router.get('/', async (req, res) => {
     try {
         res.status(200).json(users);
@@ -26,6 +31,17 @@ router.get('/', async (req, res) => {
     }
 });
 
+/**
+ * Create a new user in the mock database
+ * @route POST /users
+ * @param {Object} req.body - User data
+ * @param {string} req.body.first_name - User's first name
+ * @param {string} req.body.last_name - User's last name
+ * @param {string} req.body.email - User's email address
+ * @returns {Object} Created user object with success message
+ * @throws {400} Bad request if required fields are missing
+ * @throws {500} Internal server error if user creation fails
+ */
 router.post('/', async (req, res) => {
     try {
         const user = req.body;
@@ -46,6 +62,14 @@ router.post('/', async (req, res) => {
     }
 });
 
+/**
+ * Get a specific user by ID
+ * @route GET /users/:id
+ * @param {string} req.params.id - User ID
+ * @returns {Object} User object if found
+ * @throws {404} Not found if user doesn't exist
+ * @throws {500} Internal server error if fetching user fails
+ */
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -62,6 +86,14 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+/**
+ * Delete a user by ID
+ * @route DELETE /users/:id
+ * @param {string} req.params.id - User ID to delete
+ * @returns {Object} Success message if user is deleted
+ * @throws {404} Not found if user doesn't exist
+ * @throws {500} Internal server error if deletion fails
+ */
 router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;
