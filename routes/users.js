@@ -1,13 +1,23 @@
-import express from 'express';
-import { v4 as uuidv4 } from 'uuid';
-import { User } from '../models/User.js';
+import express from "express";
+import { v4 as uuidv4 } from "uuid";
+import { User } from "../models/User.js";
 
 const router = express.Router();
 
 // Mock database
 let users = [
-    new User({ first_name: 'John', last_name: 'Doe', email: 'johndoe@example.com', id: uuidv4() }),
-    new User({ first_name: 'Alice', last_name: 'Smith', email: 'alicesmith@example.com', id: uuidv4() })
+  new User({
+    first_name: "John",
+    last_name: "Doe",
+    email: "johndoe@example.com",
+    id: uuidv4(),
+  }),
+  new User({
+    first_name: "Alice",
+    last_name: "Smith",
+    email: "alicesmith@example.com",
+    id: uuidv4(),
+  }),
 ];
 
 /**
@@ -16,12 +26,12 @@ let users = [
  * @returns {Object[]} Array of user objects
  * @throws {500} Internal server error if fetching users fails
  */
-router.get('/', async (req, res) => {
-    try {
-        res.status(200).json(users);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch users' });
-    }
+router.get("/", async (req, res) => {
+  try {
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch users" });
+  }
 });
 
 /**
@@ -35,34 +45,34 @@ router.get('/', async (req, res) => {
  * @throws {400} Bad request if required fields are missing
  * @throws {500} Internal server error if user creation fails
  */
-router.post('/', async (req, res) => {
-    try {
-        const user = req.body;
-        console.log(req.body);
+router.post("/", async (req, res) => {
+  try {
+    const user = req.body;
+    console.log(req.body);
 
-        if (!user.first_name || !user.last_name || !user.email) {
-            return res.status(400).json({ error: 'Missing required fields' });
-        }
-
-        // Create new User instance using object destructuring
-        const newUser = new User({
-            first_name: user.first_name,
-            last_name: user.last_name,
-            email: user.email,
-            id: uuidv4()
-        });
-
-        // Add to mock database
-        users.push(newUser);
-
-        res.status(201).json({
-            message: `${user.first_name} has been added to the Database`,
-            user: newUser
-        });
-    } catch (error) {
-        console.error('Create user error:', error);
-        res.status(500).json({ error: 'Failed to create user' });
+    if (!user.first_name || !user.last_name || !user.email) {
+      return res.status(400).json({ error: "Missing required fields" });
     }
+
+    // Create new User instance using object destructuring
+    const newUser = new User({
+      first_name: user.first_name,
+      last_name: user.last_name,
+      email: user.email,
+      id: uuidv4(),
+    });
+
+    // Add to mock database
+    users.push(newUser);
+
+    res.status(201).json({
+      message: `${user.first_name} has been added to the Database`,
+      user: newUser,
+    });
+  } catch (error) {
+    console.error("Create user error:", error);
+    res.status(500).json({ error: "Failed to create user" });
+  }
 });
 
 /**
@@ -73,20 +83,20 @@ router.post('/', async (req, res) => {
  * @throws {404} Not found if user doesn't exist
  * @throws {500} Internal server error if fetching user fails
  */
-router.get('/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
+router.get("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
 
-        const foundUser = users.find((user) => user.id === id);
+    const foundUser = users.find((user) => user.id === id);
 
-        if (!foundUser) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        res.status(200).json(foundUser);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch user' });
+    if (!foundUser) {
+      return res.status(404).json({ error: "User not found" });
     }
+
+    res.status(200).json(foundUser);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch user" });
+  }
 });
 
 /**
@@ -97,22 +107,24 @@ router.get('/:id', async (req, res) => {
  * @throws {404} Not found if user doesn't exist
  * @throws {500} Internal server error if deletion fails
  */
-router.delete('/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
+router.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
 
-        const userIndex = users.findIndex((user) => user.id === id);
+    const userIndex = users.findIndex((user) => user.id === id);
 
-        if (userIndex === -1) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        users = users.filter((user) => user.id !== id);
-
-        res.status(200).json({ message: `User ${id} deleted successfully from database` });
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to delete user' });
+    if (userIndex === -1) {
+      return res.status(404).json({ error: "User not found" });
     }
+
+    users = users.filter((user) => user.id !== id);
+
+    res
+      .status(200)
+      .json({ message: `User ${id} deleted successfully from database` });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to delete user" });
+  }
 });
 
 export default router;
