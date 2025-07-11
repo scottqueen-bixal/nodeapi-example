@@ -6,7 +6,7 @@
 
 /**
  * Create users table
- * @param {import('knex').Knex} knex - Knex instance
+ * @param {Object} knex - Knex instance
  * @returns {Promise<void>}
  */
 export async function up(knex) {
@@ -25,7 +25,7 @@ export async function up(knex) {
 
 /**
  * Drop users table
- * @param {import('knex').Knex} knex - Knex instance
+ * @param {Object} knex - Knex instance
  * @returns {Promise<void>}
  */
 export async function down(knex) {

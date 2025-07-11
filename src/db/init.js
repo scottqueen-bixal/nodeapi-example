@@ -15,7 +15,7 @@ const environment = process.env.NODE_ENV || 'development';
 
 /**
  * Knex instance configured for the current environment
- * @type {import('knex').Knex}
+ * @type {Object}
  */
 const db = knex(knexConfig[environment]);
 
@@ -32,18 +32,18 @@ export async function initializeDatabase() {
 
     // Run migrations
     await db.migrate.latest();
-    console.log('✅ Database migrations completed successfully');
+    console.log('Database migrations completed successfully');
 
     // Run seeds in development only
     if (environment === 'development') {
       console.log('🌱 Running database seeds...');
       await db.seed.run();
-      console.log('✅ Database seeds completed successfully');
+      console.log('Database seeds completed successfully');
     }
 
-    console.log('🎉 Database initialization completed');
+    console.log('Database initialization completed');
   } catch (error) {
-    console.error('❌ Database initialization failed:', error.message);
+    console.error('Database initialization failed:', error.message);
     throw error;
   }
 }
@@ -51,7 +51,7 @@ export async function initializeDatabase() {
 /**
  * Get the Knex database instance
  * @function
- * @returns {import('knex').Knex} Knex database instance
+ * @returns {Object} Knex database instance
  */
 export function getKnexInstance() {
   return db;

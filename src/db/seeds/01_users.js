@@ -6,7 +6,7 @@
 
 /**
  * Seed users table with sample data
- * @param {import('knex').Knex} knex - Knex instance
+ * @param {Object} knex - Knex instance
  * @returns {Promise<void>}
  */
 export async function seed(knex) {
