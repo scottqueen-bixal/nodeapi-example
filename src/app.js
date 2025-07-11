@@ -9,6 +9,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import userRoutes from "./routes/users.js";
+import { testConnection } from "./config/database.js";
 
 /**
  * Express application instance
@@ -93,6 +94,9 @@ app.use("/users", userRoutes);
  * @example
  * // Server running at http://localhost:8000/
  */
-app.listen(port, () => {
+app.listen(port, async () => {
   console.log(`Server running at http://${domain}:${port}/`);
+
+  // Test database connection on startup
+  await testConnection();
 });
