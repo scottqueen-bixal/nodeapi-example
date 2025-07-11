@@ -1,6 +1,6 @@
 # Node.js Crash Course API
 
-A RESTful API built with Express.js and ES6 modules for managing users. This project demonstrates modern Node.js development practices including async/await, error handling, and clean architecture.
+A RESTful API built with Express.js and ES6 modules for managing users. This project demonstrates modern Node.js development practices including async/await, error handling, clean architecture, Docker containerization, and comprehensive JSDoc documentation.
 
 ## 🚀 Features
 
@@ -11,57 +11,94 @@ A RESTful API built with Express.js and ES6 modules for managing users. This pro
 - **Error Handling** - Comprehensive error handling middleware
 - **Hot Reload** - Development server with nodemon
 - **UUID Support** - Unique identifiers for all users
+- **Docker Support** - Containerized deployment with Docker Compose
+- **JSDoc Documentation** - Comprehensive API documentation generation
+- **Clean Architecture** - Organized src/ structure with models and routes
 
 ## 📋 Prerequisites
 
-- Node.js (v14 or higher)
+- Node.js (v20 or higher)
 - npm or yarn package manager
+- Docker and Docker Compose (for containerized deployment)
 
 ## 🛠️ Installation
 
-1. Install dependencies:
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd nodejs-crash
+```
+
+2. Install dependencies:
 ```bash
 npm install
 ```
 
-2. Create a `.env` file in the root directory (optional):
+3. Create a `.env` file in the root directory:
 ```bash
 PORT=8000
+DOCS_PORT=3000
+NODE_ENV=development
 ```
 
 ## 🚀 Running the Application
 
-### Development Mode
+### Development Mode (Local)
 ```bash
 npm run serve
 ```
 
-### Production Mode
+### Production Mode (Local)
 ```bash
-node express.js
+node src/app.js
 ```
 
-The server will start at `http://localhost:8000` (or the port specified in your `.env` file).
+### Docker Deployment
+```bash
+# Start all services
+docker-compose up --build
+
+# Start in background
+docker-compose up -d --build
+
+# Start only the API
+docker-compose up backend-node
+
+# Start only the documentation
+docker-compose up jsdoc
+```
 
 ## 📁 Project Structure
 
 ```
 nodejs-crash/
-├── express.js          # Main application file
-├── server.js           # Basic HTTP server (alternative)
-├── package.json        # Project dependencies and scripts
-├── models/
-│   └── User.js         # User model with validation
-├── routes/
-│   └── users.js        # User routes and controllers
-└── README.md           # Project documentation
+├── src/
+│   ├── app.js              # Main Express application
+│   ├── models/
+│   │   └── User.js         # User model with validation and JSDoc
+│   └── routes/
+│       └── users.js        # User routes and controllers with JSDoc
+├── docker-compose.yml      # Docker Compose configuration
+├── docker-compose.prod.yml # Production Docker Compose
+├── Dockerfile             # Docker container configuration
+├── .dockerignore          # Docker ignore file
+├── jsdoc.conf.json        # JSDoc configuration
+├── package.json           # Dependencies and scripts
+├── .env                   # Environment variables
+├── server.js              # Basic HTTP server (alternative)
+└── README.md              # Project documentation
 ```
 
 ## 🔧 API Endpoints
 
 ### Base URL
 ```
-http://localhost:8000
+http://localhost:${PORT}
+```
+
+### Documentation
+```
+http://localhost:${DOCS_PORT}
 ```
 
 ### Routes
@@ -120,6 +157,54 @@ http://localhost:8000
   - `404`: User not found
   - `500`: Internal server error
 
+## 📚 Documentation
+
+### JSDoc Documentation
+The project includes comprehensive JSDoc documentation for all components:
+
+- **User Model**: Complete class documentation with examples
+- **API Routes**: Detailed endpoint documentation with parameters
+- **Express App**: Middleware and configuration documentation
+
+### Accessing Documentation
+1. **Docker**: `http://localhost:${DOCS_PORT}` (when running docker-compose)
+2. **Local Generation**:
+   ```bash
+   npm install -g jsdoc
+   jsdoc src/**/*.js -d docs -c jsdoc.conf.json
+   ```
+
+## 🐳 Docker Deployment
+
+### Services
+- **backend-node**: Main API service
+- **jsdoc**: Documentation generation and serving
+
+### Environment Variables
+```bash
+# API Configuration
+PORT=8000
+NODE_ENV=development
+
+# Documentation
+DOCS_PORT=3000
+```
+
+### Docker Commands
+```bash
+# Build and start all services
+docker-compose up --build
+
+# Production deployment
+docker-compose -f docker-compose.prod.yml up --build -d
+
+# View logs
+docker-compose logs -f backend-node
+
+# Stop services
+docker-compose down
+```
+
 ## 📝 User Model
 
 ### User Properties
@@ -140,12 +225,12 @@ http://localhost:8000
 
 **Get all users:**
 ```bash
-curl http://localhost:8000/users
+curl http://localhost:${PORT}/users
 ```
 
 **Create a new user:**
 ```bash
-curl -X POST http://localhost:8000/users \
+curl -X POST http://localhost:${PORT}/users \
   -H "Content-Type: application/json" \
   -d '{
     "first_name": "Jane",
@@ -156,20 +241,32 @@ curl -X POST http://localhost:8000/users \
 
 **Get a specific user:**
 ```bash
-curl http://localhost:8000/users/USER_ID_HERE
+curl http://localhost:${PORT}/users/USER_ID_HERE
 ```
 
 **Delete a user:**
 ```bash
-curl -X DELETE http://localhost:8000/users/USER_ID_HERE
+curl -X DELETE http://localhost:${PORT}/users/USER_ID_HERE
 ```
 
 ### Using Postman
 
-1. Set the base URL to `http://localhost:8000`
+1. Set the base URL to `http://localhost:${PORT}`
 2. Set appropriate HTTP methods (GET, POST, DELETE)
 3. For POST requests, set `Content-Type: application/json` in headers
 4. Use the request body examples provided above
+
+### Docker Testing
+```bash
+# Start services
+docker-compose up -d
+
+# Test API
+curl http://localhost:8000/users
+
+# View documentation
+open http://localhost:3000
+```
 
 ## ⚠️ Common Issues
 
@@ -182,12 +279,20 @@ curl -X DELETE http://localhost:8000/users/USER_ID_HERE
 - Ensure you have `"type": "module"` in your `package.json`
 - Use `.js` extensions in import statements for local modules
 
+### Docker Issues
+- Ensure Docker is running
+- Check port availability (8000 for API, 3000 for docs)
+- Verify environment variables are set in `.env` file
+
 ## 🔧 Technologies Used
 
 - **Express.js** - Web framework
 - **UUID** - Unique identifier generation
 - **Nodemon** - Development server with hot reload
 - **Body-parser** - Request body parsing middleware
+- **Docker** - Containerization platform
+- **JSDoc** - Documentation generation
+- **Alpine Linux** - Lightweight Docker base image
 
 ## 📦 Dependencies
 
@@ -205,6 +310,39 @@ curl -X DELETE http://localhost:8000/users/USER_ID_HERE
 - **Middleware** - Error handling and request processing
 - **ES6 Modules** - Modern JavaScript module system
 - **Async/Await** - Clean asynchronous programming
+- **Container Architecture** - Docker-based deployment
+- **Documentation-First** - Comprehensive JSDoc comments
+- **Environment Configuration** - Flexible .env setup
+
+## 🌐 Deployment
+
+### Local Development
+```bash
+npm run serve
+```
+
+### Docker Development
+```bash
+docker-compose up --build
+```
+
+### Production
+```bash
+docker-compose -f docker-compose.prod.yml up --build -d
+```
+
+## 📖 API Documentation
+
+The project includes comprehensive JSDoc documentation covering:
+
+- **File-level documentation** - Purpose and module information
+- **Class documentation** - User model with validation
+- **Route documentation** - Complete API endpoint details
+- **Parameter documentation** - Request/response formats
+- **Error documentation** - HTTP status codes and error handling
+- **Examples** - Practical usage examples
+
+Access the generated documentation at `http://localhost:${DOCS_PORT}` when running with Docker Compose.
 
 ## 🤝 Contributing
 
