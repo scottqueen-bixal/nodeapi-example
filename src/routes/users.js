@@ -6,7 +6,6 @@
  * @requires uuid
  * @requires ../models/User
  * @version 1.0.0
- * @author Your Name
  */
 
 import express from "express";

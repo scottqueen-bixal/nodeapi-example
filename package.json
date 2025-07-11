@@ -1,7 +1,7 @@
 {
-  "name": "nodejs-crash",
+  "name": "nodejs-users-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "A RESTful API for managing users built with Express.js",
   "main": "index.js",
   "type": "module",
   "scripts": {

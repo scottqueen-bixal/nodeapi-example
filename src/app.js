@@ -23,6 +23,12 @@ const app = express();
  */
 const port = process.env.PORT || 8000;
 
+/** * Domain name for the server, defaults to 'localhost'
+ * @type {string}
+ * @default "localhost"
+ */
+const domain = process.env.DOMAIN || "localhost";
+
 /**
  * Configure JSON parsing middleware
  * @description Parses incoming JSON requests with a limit
@@ -88,5 +94,5 @@ app.use("/users", userRoutes);
  * // Server running at http://localhost:8000/
  */
 app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}/`);
+  console.log(`Server running at http://${domain}:${port}/`);
 });
