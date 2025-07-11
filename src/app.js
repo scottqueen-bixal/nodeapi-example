@@ -10,6 +10,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import userRoutes from "./routes/users.js";
 import { testConnection } from "./config/database.js";
+import { initializeDatabase } from "./db/init.js";
 
 /**
  * Express application instance
@@ -99,4 +100,7 @@ app.listen(port, async () => {
 
   // Test database connection on startup
   await testConnection();
+
+  // Initialize database (run migrations and seeds)
+  await initializeDatabase();
 });
