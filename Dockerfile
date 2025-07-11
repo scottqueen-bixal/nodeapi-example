@@ -1,5 +1,7 @@
-# Use the official Node.js runtime as the base image
 FROM node:20-alpine
+
+# Update Alpine packages to reduce vulnerabilities
+RUN apk update && apk upgrade
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -27,4 +29,4 @@ ENV PORT=${PORT}
 EXPOSE ${PORT}
 
 # Command to run the application with dotenv support
-CMD ["node", "-r", "dotenv/config", "app.js"]
+CMD ["node", "-r", "dotenv/config", "src/app.js"]
