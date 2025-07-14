@@ -9,6 +9,7 @@
 
 import express from "express";
 import { UserModel } from "../models/UserModel.js";
+import { hashPassword } from "../utils.js";
 
 /**
  * Express router instance for user routes
@@ -90,10 +91,10 @@ router.get("/", async (req, res) => {
  */
 router.post("/", async (req, res) => {
   try {
-    const { first_name, last_name, email } = req.body;
+    const { first_name, last_name, email, password } = req.body;
 
-    if (!first_name || !last_name || !email) {
-      return res.status(400).json({ error: "Missing required fields: first_name, last_name, email" });
+    if (!first_name || !last_name || !email || !password) {
+      return res.status(400).json({ error: "Missing required fields: first_name, last_name, email, password" });
     }
 
     // Check if email already exists
@@ -102,11 +103,16 @@ router.post("/", async (req, res) => {
       return res.status(409).json({ error: "Email already exists" });
     }
 
-    // Create new user
+    // Hash the password
+    const { hash, salt } = hashPassword(password);
+
+    // Create new user with hashed password
     const newUser = await UserModel.create({
       first_name,
       last_name,
-      email
+      email,
+      password: hash,
+      salt: salt
     });
 
     res.status(201).json({
