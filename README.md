@@ -92,11 +92,57 @@ DOCS_PORT=5001
 ADMINER_PORT=8002
 DOMAIN=localhost
 NODE_ENV=development
+API_KEY=your-secure-api-key-here
 DB_HOST=postgres
 DB_PORT=5432
 DB_NAME=nodejs_app
 DB_USER=postgres
 DB_PASSWORD=postgres
+```
+
+## API Key Authentication
+
+This API uses API key authentication to secure all endpoints except the root endpoint (`/`). 
+
+### Configuration
+
+1. Set your API key in the `.env` file:
+```bash
+API_KEY=your-secure-api-key-here
+```
+
+2. Include the API key in your requests using the `X-API-Key` header:
+```bash
+curl -H "X-API-Key: your-secure-api-key-here" http://localhost:8000/users
+```
+
+### JavaScript/Node.js Example
+
+```javascript
+const response = await fetch('http://localhost:8000/users', {
+  headers: {
+    'X-API-Key': 'your-secure-api-key-here',
+    'Content-Type': 'application/json'
+  }
+});
+```
+
+### Error Responses
+
+- **401 Unauthorized**: Missing API key
+```json
+{
+  "error": "API key is required",
+  "message": "Please provide an API key in the X-API-Key header"
+}
+```
+
+- **401 Unauthorized**: Invalid API key
+```json
+{
+  "error": "Invalid API key",
+  "message": "The provided API key is not valid"
+}
 ```
 
 3. Start the development server:
