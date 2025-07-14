@@ -102,7 +102,7 @@ DB_PASSWORD=postgres
 
 ## API Key Authentication
 
-This API uses API key authentication to secure all endpoints except the root endpoint (`/`). 
+This API uses API key authentication to secure all endpoints except the root endpoint (`/`).
 
 ### Configuration
 
