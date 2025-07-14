@@ -4,7 +4,7 @@
  * @version 1.0.0
  */
 
-import db from '../db/init.js';
+import db from "../db/init.js";
 
 /**
  * User model class for database operations
@@ -20,9 +20,9 @@ export class UserModel {
    */
   static async findAll() {
     try {
-      return await db('users').select('*').orderBy('created_at', 'desc');
+      return await db("users").select("*").orderBy("created_at", "desc");
     } catch (error) {
-      console.error('Error fetching users:', error);
+      console.error("Error fetching users:", error);
       throw error;
     }
   }
@@ -37,10 +37,10 @@ export class UserModel {
    */
   static async findById(id) {
     try {
-      const user = await db('users').where({ id }).first();
+      const user = await db("users").where({ id }).first();
       return user || null;
     } catch (error) {
-      console.error('Error fetching user by ID:', error);
+      console.error("Error fetching user by ID:", error);
       throw error;
     }
   }
@@ -55,10 +55,10 @@ export class UserModel {
    */
   static async findByEmail(email) {
     try {
-      const user = await db('users').where({ email }).first();
+      const user = await db("users").where({ email }).first();
       return user || null;
     } catch (error) {
-      console.error('Error fetching user by email:', error);
+      console.error("Error fetching user by email:", error);
       throw error;
     }
   }
@@ -71,23 +71,27 @@ export class UserModel {
    * @param {string} userData.first_name - First name
    * @param {string} userData.last_name - Last name
    * @param {string} userData.email - Email address
+   * @param {string} userData.password - Hashed password
+   * @param {string} userData.salt - Password salt
    * @returns {Promise<Object>} Created user object
    * @throws {Error} Database query error
    */
   static async create(userData) {
     try {
-      const [newUser] = await db('users')
+      const [newUser] = await db("users")
         .insert({
           first_name: userData.first_name,
           last_name: userData.last_name,
           email: userData.email,
+          password_hash: userData.password,
+          salt: userData.salt,
           created_at: new Date(),
-          updated_at: new Date()
+          updated_at: new Date(),
         })
-        .returning('*');
+        .returning("*");
       return newUser;
     } catch (error) {
-      console.error('Error creating user:', error);
+      console.error("Error creating user:", error);
       throw error;
     }
   }
@@ -103,16 +107,16 @@ export class UserModel {
    */
   static async update(id, userData) {
     try {
-      const [updatedUser] = await db('users')
+      const [updatedUser] = await db("users")
         .where({ id })
         .update({
           ...userData,
-          updated_at: new Date()
+          updated_at: new Date(),
         })
-        .returning('*');
+        .returning("*");
       return updatedUser || null;
     } catch (error) {
-      console.error('Error updating user:', error);
+      console.error("Error updating user:", error);
       throw error;
     }
   }
@@ -127,10 +131,10 @@ export class UserModel {
    */
   static async delete(id) {
     try {
-      const deletedCount = await db('users').where({ id }).del();
+      const deletedCount = await db("users").where({ id }).del();
       return deletedCount > 0;
     } catch (error) {
-      console.error('Error deleting user:', error);
+      console.error("Error deleting user:", error);
       throw error;
     }
   }
@@ -144,10 +148,10 @@ export class UserModel {
    */
   static async count() {
     try {
-      const [{ count }] = await db('users').count('id as count');
+      const [{ count }] = await db("users").count("id as count");
       return parseInt(count);
     } catch (error) {
-      console.error('Error counting users:', error);
+      console.error("Error counting users:", error);
       throw error;
     }
   }
