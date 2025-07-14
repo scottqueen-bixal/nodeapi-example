@@ -7,6 +7,7 @@
  */
 
 import express from "express";
+import cors from "cors";
 import bodyParser from "body-parser";
 import userRoutes from "./routes/users.js";
 import { testConnection } from "./config/database.js";
@@ -30,6 +31,24 @@ const port = process.env.PORT || 8000;
  * @default "localhost"
  */
 const domain = process.env.DOMAIN || "localhost";
+
+/**
+ * Configure CORS middleware
+ * @description Allows cross-origin requests from the frontend
+ */
+app.use(
+  cors({
+    origin: [
+      `${process.env.APP_URL}`,
+      `http://localhost:${process.env.FRONT_END_PORT}`,
+      "http://localhost:3000",
+      "http://127.0.0.1:3000",
+    ],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 /**
  * Configure JSON parsing middleware
