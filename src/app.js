@@ -10,6 +10,7 @@ import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import userRoutes from "./routes/users.js";
+import userAuth from "./routes/user-auth.js";
 import { testConnection } from "./config/database.js";
 import { initializeDatabase } from "./db/init.js";
 
@@ -104,6 +105,13 @@ app.get("/", (req, res) => {
  * @see {@link ./routes/users.js} for user route implementations
  */
 app.use("/users", userRoutes);
+
+/**
+ * User routes middleware
+ * @description Mounts user-auth-related routes under the /user-auth path
+ * @see {@link ./routes/user-auth.js} for user route implementations
+ */
+app.use("/user-auth", userAuth);
 
 /**
  * Start the Express server
