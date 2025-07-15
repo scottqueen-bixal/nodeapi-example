@@ -64,14 +64,37 @@ router.post("/", async (req, res) => {
       { id: user.id },
       process.env.JWT_SECRET || "fallback-secret-key",
       {
-        expiresIn: "1h",
+        expiresIn: "1hr", // Set token expiration to 1 hour
       }
     );
 
-    res.status(200).json({ user, token });
+    // Return only safe user data
+    const safeUserData = {
+      id: user.id,
+    };
+
+    res.status(200).json({ user: safeUserData, token });
   } catch (error) {
     console.error("Authentication error:", error);
     res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Add this to your API routes
+router.post("/verify-token", (req, res) => {
+  const token = req.headers.authorization?.replace("Bearer ", "");
+
+  try {
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || "fallback-secret-key"
+    );
+    res.json({
+      userId: decoded.id,
+      expiresAt: new Date(decoded.exp * 1000),
+    });
+  } catch (error) {
+    res.status(401).json({ error: "Invalid token" });
   }
 });
 
