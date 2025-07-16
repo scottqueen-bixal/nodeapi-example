@@ -10,6 +10,7 @@
 import express from "express";
 import { UserModel } from "../models/UserModel.js";
 import { hashPassword } from "../utils.js";
+import { validateApiKey } from "../middleware/auth.js";
 
 /**
  * Express router instance for user routes
@@ -42,7 +43,7 @@ const router = express.Router();
  *   }
  * ]
  */
-router.get("/", async (req, res) => {
+router.get("/", validateApiKey, async (req, res) => {
   try {
     const users = await UserModel.findAll();
     res.status(200).json(users);
@@ -89,7 +90,7 @@ router.get("/", async (req, res) => {
  *   }
  * }
  */
-router.post("/", async (req, res) => {
+router.post("/", validateApiKey, async (req, res) => {
   try {
     const { first_name, last_name, email, password } = req.body;
 
@@ -150,7 +151,7 @@ router.post("/", async (req, res) => {
  *   "updated_at": "2025-01-15T10:30:00.000Z"
  * }
  */
-router.get("/:id", async (req, res) => {
+router.get("/:id", validateApiKey, async (req, res) => {
   try {
     const { id } = req.params;
     const userId = parseInt(id);
@@ -210,7 +211,7 @@ router.get("/:id", async (req, res) => {
  *   }
  * }
  */
-router.put("/:id", async (req, res) => {
+router.put("/:id", validateApiKey, async (req, res) => {
   try {
     const { id } = req.params;
     const userId = parseInt(id);
@@ -273,7 +274,7 @@ router.put("/:id", async (req, res) => {
  *   "message": "User 1 deleted successfully from database"
  * }
  */
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", validateApiKey, async (req, res) => {
   try {
     const { id } = req.params;
     const userId = parseInt(id);
