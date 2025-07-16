@@ -39,9 +39,7 @@ const domain = process.env.DOMAIN || "localhost";
  */
 app.use(
   cors({
-    origin: [
-      `${process.env.APP_URL}`,
-      `http://localhost:${process.env.FRONT_END_PORT}`,
+    origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [
       "http://localhost:3000",
       "http://127.0.0.1:3000",
     ],
