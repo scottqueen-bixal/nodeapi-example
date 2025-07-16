@@ -9,8 +9,10 @@
 
 import express from "express";
 import { UserModel } from "../models/UserModel.js";
+import { SessionModel } from "../models/SessionModel.js";
 import jwt from "jsonwebtoken";
-import { verifyPassword } from "../utils.js";
+import { verifyPassword, encrypt, decrypt } from "../utils.js";
+import { validateApiKey } from "../middleware/auth.js";
 
 /**
  * Express router instance for user routes
@@ -31,7 +33,7 @@ const router = express.Router();
  * // Request body: { "username": "johndoe", "password": "password123" }
  * // Response: 200 OK with user data or 400 Bad Request with error message
  */
-router.post("/", async (req, res) => {
+router.post("/", validateApiKey, async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
     return res.status(400).json({ error: "Email and password are required" });
@@ -68,12 +70,27 @@ router.post("/", async (req, res) => {
       }
     );
 
+    // Create session in database
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+    const session = await SessionModel.create(user.id, expiresAt);
+
+    // Encrypt session data
+    const encryptedSession = encrypt({
+      sessionId: session.id,
+      expiresAt: expiresAt.toISOString(),
+    });
+
     // Return only safe user data
     const safeUserData = {
       id: user.id,
     };
 
-    res.status(200).json({ user: safeUserData, token });
+    res.status(200).json({ 
+      user: safeUserData, 
+      token,
+      session: encryptedSession,
+      sessionExpires: expiresAt.toISOString()
+    });
   } catch (error) {
     console.error("Authentication error:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -95,6 +112,97 @@ router.post("/verify-token", (req, res) => {
     });
   } catch (error) {
     res.status(401).json({ error: "Invalid token" });
+  }
+});
+
+// Session verification endpoint
+router.post("/verify-session", validateApiKey, async (req, res) => {
+  const { session } = req.body;
+
+  if (!session) {
+    return res.status(400).json({ error: "Session is required" });
+  }
+
+  try {
+    // Decrypt session
+    const decryptedSession = decrypt(session);
+    
+    if (!decryptedSession) {
+      return res.status(401).json({ error: "Invalid session" });
+    }
+
+    const { sessionId, expiresAt } = decryptedSession;
+
+    // Check if session is expired
+    if (new Date(expiresAt) <= new Date()) {
+      return res.status(401).json({ error: "Session expired" });
+    }
+
+    // Check if session exists in database
+    const dbSession = await SessionModel.findById(sessionId);
+    
+    if (!dbSession) {
+      return res.status(401).json({ error: "Session not found" });
+    }
+
+    // Check if database session is expired
+    if (new Date(dbSession.expires_at) <= new Date()) {
+      // Clean up expired session
+      await SessionModel.deleteById(sessionId);
+      return res.status(401).json({ error: "Session expired" });
+    }
+
+    // Get user data
+    const user = await UserModel.findById(dbSession.user_id);
+    
+    if (!user) {
+      return res.status(401).json({ error: "User not found" });
+    }
+
+    // Return user data
+    res.json({
+      userId: user.id,
+      user: {
+        id: user.id,
+        email: user.email,
+        first_name: user.first_name,
+        last_name: user.last_name,
+      },
+      expiresAt: dbSession.expires_at,
+    });
+
+  } catch (error) {
+    console.error("Session verification error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Logout endpoint
+router.post("/logout", validateApiKey, async (req, res) => {
+  const { session } = req.body;
+
+  if (!session) {
+    return res.status(400).json({ error: "Session is required" });
+  }
+
+  try {
+    // Decrypt session
+    const decryptedSession = decrypt(session);
+    
+    if (!decryptedSession) {
+      return res.status(200).json({ message: "Logged out successfully" });
+    }
+
+    const { sessionId } = decryptedSession;
+
+    // Delete session from database
+    await SessionModel.deleteById(sessionId);
+
+    res.status(200).json({ message: "Logged out successfully" });
+
+  } catch (error) {
+    console.error("Logout error:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
